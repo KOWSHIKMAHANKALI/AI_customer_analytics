@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Herbal Dashboard",
+			"type": "shell",
+			"command": "streamlit run streamlit_app.py --server.headless true --server.port 8501",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
