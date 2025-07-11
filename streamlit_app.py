@@ -73,8 +73,6 @@ def parse_growth(val):
 # Sidebar
 # ------------------------------
 st.sidebar.title("🌿 Herbal Dashboard Assistant")
-st.sidebar.markdown("Your one-stop insight engine for Indian Herbal Industry.")
-st.sidebar.markdown("---")
 
 # --- Voice Search Section ---
 # st.sidebar.markdown("#### 🎙️ Voice or Text Search")
@@ -138,8 +136,10 @@ st.sidebar.markdown("---")
 # )
 # st.session_state.company = selected_company
 
-# --- Gemini Chat Section ---st.sidebar.markdown("#### 🤖 Ask PharmaBot")
+st.sidebar.markdown("---")
 
+# --- Gemini Chat Section ---
+st.sidebar.markdown("#### 🤖 Ask Pharmabot")
 user_input = st.sidebar.text_input(
     "Ask about the Indian herbal industry:",
     key="gemini_input",
@@ -151,9 +151,9 @@ if "last_gemini_input" not in st.session_state:
 if "gemini_response_text" not in st.session_state:
     st.session_state.gemini_response_text = ""
 
-if user_input and user_input != st.session_state.last_gemini_input:
+if user_input and user_input != st.session_state.last_gemini_input and gemini_model:
     with st.sidebar:
-        with st.spinner("🔄 Gemini is thinking..."):
+        with st.spinner("Thinking..."):
             try:
                 gemini_response = gemini_model.generate_content(f"""
                 You are an expert assistant on Indian herbal supplement industry.
@@ -161,16 +161,15 @@ if user_input and user_input != st.session_state.last_gemini_input:
                 """)
                 st.session_state.gemini_response_text = gemini_response.text
             except Exception as e:
-                st.session_state.gemini_response_text = "❌ Gemini failed. Please check your API key or connection."
+                st.session_state.gemini_response_text = "Gemini failed. Please check your API key or connection."
     st.session_state.last_gemini_input = user_input
 
-# Display Gemini Response
 if user_input:
-    st.sidebar.markdown("##### 🧠 Gemini Response:")
-    st.sidebar.info(st.session_state.gemini_response_text)
+    st.sidebar.markdown("##### Response:")
+    st.sidebar.write(st.session_state.gemini_response_text)
 
 st.sidebar.markdown("---")
-st.sidebar.caption("📊 Powered by Streamlit & Gemini | © 2025 Herbal Insights")
+st.sidebar.caption("© 2025 Indian Herbal Dashboard")
 
 # ------------------------------
 # Landing Section
