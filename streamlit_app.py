@@ -75,66 +75,66 @@ def parse_growth(val):
 st.sidebar.title("🌿 Herbal Dashboard Assistant")
 
 # --- Voice Search Section ---
-st.sidebar.markdown("#### 🎙️ Voice or Text Search")
-st.sidebar.info("Tip: Voice search works best in Google Chrome with microphone permissions enabled.")
+# st.sidebar.markdown("#### 🎙️ Voice or Text Search")
+# st.sidebar.info("Tip: Voice search works best in Google Chrome with microphone permissions enabled.")
 
-voice_text = st.sidebar.text_input(
-    "Say a company name or type it below:",
-    value=st.session_state.get("company", ""),
-    key="voice_input"
-)
+# voice_text = st.sidebar.text_input(
+#     "Say a company name or type it below:",
+#     value=st.session_state.get("company", ""),
+#     key="voice_input"
+# )
 
-voice_js = '''
-<script>
-function startDictation() {
-    if (window.hasOwnProperty('webkitSpeechRecognition')) {
-        var recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = "en-US";
-        recognition.start();
-        recognition.onresult = function(e) {
-            var result = e.results[0][0].transcript;
-            window.parent.postMessage({isStreamlitMessage: true, voiceResult: result}, "*");
-            recognition.stop();
-        };
-        recognition.onerror = function(e) {
-            recognition.stop();
-        }
-    }
-}
-window.addEventListener("message", (event) => {
-    if (event.data && event.data.isStreamlitMessage && event.data.voiceResult) {
-        const input = window.parent.document.querySelector('input[data-testid="stTextInput"]');
-        if (input) {
-            input.value = event.data.voiceResult;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }
-});
-</script>
-<button onclick="startDictation()" style="margin-top: 5px; margin-bottom: 10px;">🎙 Speak</button>
-'''
-components.html(voice_js, height=50)
+# voice_js = '''
+# <script>
+# function startDictation() {
+#     if (window.hasOwnProperty('webkitSpeechRecognition')) {
+#         var recognition = new webkitSpeechRecognition();
+#         recognition.continuous = false;
+#         recognition.interimResults = false;
+#         recognition.lang = "en-US";
+#         recognition.start();
+#         recognition.onresult = function(e) {
+#             var result = e.results[0][0].transcript;
+#             window.parent.postMessage({isStreamlitMessage: true, voiceResult: result}, "*");
+#             recognition.stop();
+#         };
+#         recognition.onerror = function(e) {
+#             recognition.stop();
+#         }
+#     }
+# }
+# window.addEventListener("message", (event) => {
+#     if (event.data && event.data.isStreamlitMessage && event.data.voiceResult) {
+#         const input = window.parent.document.querySelector('input[data-testid="stTextInput"]');
+#         if (input) {
+#             input.value = event.data.voiceResult;
+#             input.dispatchEvent(new Event('input', { bubbles: true }));
+#         }
+#     }
+# });
+# </script>
+# <button onclick="startDictation()" style="margin-top: 5px; margin-bottom: 10px;">🎙 Speak</button>
+# '''
+# components.html(voice_js, height=50)
 
-company_names = data["Company Name"].unique().tolist()
-# Fuzzy match the voice/company text to the closest company name
-if voice_text:
-    match = get_close_matches(voice_text, company_names, n=1, cutoff=0.5)
-    if match:
-        st.session_state.company = match[0]
-    else:
-        st.session_state.company = company_names[0]
-else:
-    st.session_state.company = company_names[0]
+# company_names = data["Company Name"].unique().tolist()
+# # Fuzzy match the voice/company text to the closest company name
+# if voice_text:
+#     match = get_close_matches(voice_text, company_names, n=1, cutoff=0.5)
+#     if match:
+#         st.session_state.company = match[0]
+#     else:
+#         st.session_state.company = company_names[0]
+# else:
+#     st.session_state.company = company_names[0]
 
-selected_company = st.sidebar.selectbox(
-    "Or select a company manually:",
-    company_names,
-    index=company_names.index(st.session_state.company),
-    help="Pick a company to view its dashboard"
-)
-st.session_state.company = selected_company
+# selected_company = st.sidebar.selectbox(
+#     "Or select a company manually:",
+#     company_names,
+#     index=company_names.index(st.session_state.company),
+#     help="Pick a company to view its dashboard"
+# )
+# st.session_state.company = selected_company
 
 st.sidebar.markdown("---")
 
