@@ -68,108 +68,63 @@ def parse_growth(val):
     if pd.isna(val): return 0
     m = re.search(r"([+-]?\d+\.?\d*)%", str(val))
     return float(m.group(1)) if m else 0
-
 # ------------------------------
-# Sidebar
+# Sidebar – Updated Version
 # ------------------------------
 st.sidebar.title("🌿 Herbal Dashboard Assistant")
 
-# # --- Voice Search Section ---
-# st.sidebar.markdown("#### 🎙️ Voice or Text Search")
-# st.sidebar.info("Tip: Voice search works best in Google Chrome with microphone permissions enabled.")
+# Ensure default company is set
+company_names = data["Company Name"].unique().tolist()
+if "company" not in st.session_state:
+    st.session_state.company = company_names[0]
 
-# voice_text = st.sidebar.text_input(
-#     "Say a company name or type it below:",
-#     value=st.session_state.get("company", ""),
-#     key="voice_input"
-# )
+# Company Selector
+selected_company = st.sidebar.selectbox(
+    "🔍 Select a Herbal Company",
+    options=company_names,
+    index=company_names.index(st.session_state.company),
+    help="Choose a company to view its dashboard"
+)
+st.session_state.company = selected_company
 
-# voice_js = '''
-# <script>
-# function startDictation() {
-#     if (window.hasOwnProperty('webkitSpeechRecognition')) {
-#         var recognition = new webkitSpeechRecognition();
-#         recognition.continuous = false;
-#         recognition.interimResults = false;
-#         recognition.lang = "en-US";
-#         recognition.start();
-#         recognition.onresult = function(e) {
-#             var result = e.results[0][0].transcript;
-#             window.parent.postMessage({isStreamlitMessage: true, voiceResult: result}, "*");
-#             recognition.stop();
-#         };
-#         recognition.onerror = function(e) {
-#             recognition.stop();
-#         }
-#     }
-# }
-# window.addEventListener("message", (event) => {
-#     if (event.data && event.data.isStreamlitMessage && event.data.voiceResult) {
-#         const input = window.parent.document.querySelector('input[data-testid="stTextInput"]');
-#         if (input) {
-#             input.value = event.data.voiceResult;
-#             input.dispatchEvent(new Event('input', { bubbles: true }));
-#         }
-#     }
-# });
-# </script>
-# <button onclick="startDictation()" style="margin-top: 5px; margin-bottom: 10px;">🎙 Speak</button>
-# '''
-# components.html(voice_js, height=50)
+st.sidebar.markdown("---")
 
-# company_names = data["Company Name"].unique().tolist()
-# # Fuzzy match the voice/company text to the closest company name
-# if voice_text:
-#     match = get_close_matches(voice_text, company_names, n=1, cutoff=0.5)
-#     if match:
-#         st.session_state.company = match[0]
-#     else:
-#         st.session_state.company = company_names[0]
-# else:
-#     st.session_state.company = company_names[0]
-
-# selected_company = st.sidebar.selectbox(
-#     "Or select a company manually:",
-#     company_names,
-#     index=company_names.index(st.session_state.company),
-#     help="Pick a company to view its dashboard"
-# )
-# st.session_state.company = selected_company
-
-# st.sidebar.markdown("---")
-
-# --- Gemini Chat Section ---
+# Gemini Chat Section
 st.sidebar.markdown("#### 🤖 Ask Pharmabot")
+
 user_input = st.sidebar.text_input(
     "Ask about the Indian herbal industry:",
     key="gemini_input",
     placeholder="e.g. What is the market share of Himalaya?"
 )
 
+# Initialize Gemini session keys
 if "last_gemini_input" not in st.session_state:
     st.session_state.last_gemini_input = ""
 if "gemini_response_text" not in st.session_state:
     st.session_state.gemini_response_text = ""
 
+# Trigger Gemini API call
 if user_input and user_input != st.session_state.last_gemini_input and gemini_model:
-    with st.sidebar:
-        with st.spinner("Thinking..."):
-            try:
-                gemini_response = gemini_model.generate_content(f"""
-                You are an expert assistant on Indian herbal supplement industry.
-                Based on the following user query, give clear and concise information: "{user_input}"
-                """)
-                st.session_state.gemini_response_text = gemini_response.text
-            except Exception as e:
-                st.session_state.gemini_response_text = "Gemini failed. Please check your API key or connection."
+    with st.spinner("Pharmabot is thinking..."):
+        try:
+            gemini_response = gemini_model.generate_content(f"""
+            You are a knowledgeable assistant on the Indian herbal supplement industry.
+            Answer this user question clearly and briefly: "{user_input}"
+            """)
+            st.session_state.gemini_response_text = gemini_response.text
+        except Exception as e:
+            st.session_state.gemini_response_text = "⚠️ Gemini failed. Check your API key or connection."
+
     st.session_state.last_gemini_input = user_input
 
+# Display Gemini response
 if user_input:
-    st.sidebar.markdown("##### Response:")
+    st.sidebar.markdown("##### 💬 Response:")
     st.sidebar.write(st.session_state.gemini_response_text)
 
 st.sidebar.markdown("---")
-st.sidebar.caption("© 2025 Indian Herbal Dashboard")
+st.sidebar.caption("📊 Indian Herbal Industry Dashboard • 2025")
 
 # ------------------------------
 # Landing Section
