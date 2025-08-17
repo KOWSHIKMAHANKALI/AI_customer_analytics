@@ -46,6 +46,23 @@ def load_data():
 
 data = load_data()
 
+# Load ingredient supplier peers (detailed) for FY2024 view
+def load_peers():
+    path = "ingredient_competitors_detailed.csv"
+    if os.path.exists(path):
+        try:
+            df = pd.read_csv(path)
+            st.write(f"DEBUG: Loaded peers CSV with {len(df)} rows")  # Debug line
+            return df
+        except Exception as e:
+            st.error(f"Error loading peers CSV: {e}")
+            return pd.DataFrame()
+    else:
+        st.error(f"Peers CSV not found at: {path}")
+    return pd.DataFrame()
+
+peers_df = load_peers()
+
 # ------------------------------
 # Utility Functions
 # ------------------------------
@@ -110,6 +127,123 @@ def get_company_chart_data(company_name):
     }
     return company_profiles.get(company_name, company_profiles["Himalaya Wellness Company"])
 
+@st.cache_data
+def get_ingredient_company_data(company_name):
+    """Generate realistic chart data for ingredient supplier companies"""
+    ingredient_profiles = {
+        "OmniActive Health Technologies": {
+            "category_dist": {"Carotenoids": 45, "Curcumin": 25, "Plant Extracts": 20, "Custom Blends": 10},
+            "revenue_trend": [580, 650, 700, 750],  # Revenue in crores INR
+            "radar_values": [95, 85, 75, 88, 92],  # R&D, Product Range, Revenue, Market Presence, Innovation
+            "growth_rate": 14.3,
+            "market_share": 8.5,
+            "rnd_investment": 8.2,
+            "patents": 15,
+            "global_presence": 25
+        },
+        "Sabinsa Corporation": {
+            "category_dist": {"Curcumin": 35, "Ashwagandha": 25, "Probiotics": 20, "Other Extracts": 20},
+            "revenue_trend": [480, 550, 590, 620],
+            "radar_values": [90, 95, 70, 85, 88],
+            "growth_rate": 11.2,
+            "market_share": 7.2,
+            "rnd_investment": 7.5,
+            "patents": 80,
+            "global_presence": 30
+        },
+        "Indena S.p.A.": {
+            "category_dist": {"Standardized Extracts": 50, "APIs": 30, "CDMO Services": 15, "Research": 5},
+            "revenue_trend": [600, 650, 700, 750],  # Converted to INR crores (€85M * 90)
+            "radar_values": [98, 88, 72, 90, 95],
+            "growth_rate": 9.5,
+            "market_share": 12.5,
+            "rnd_investment": 12.0,
+            "patents": 100,
+            "global_presence": 45
+        },
+        "Synthite Industries Ltd.": {
+            "category_dist": {"Spice Extracts": 40, "Natural Colors": 25, "Flavors": 20, "Nutraceuticals": 15},
+            "revenue_trend": [650, 720, 780, 850],
+            "radar_values": [85, 92, 82, 75, 88],
+            "growth_rate": 16.8,
+            "market_share": 9.8,
+            "rnd_investment": 6.5,
+            "patents": 25,
+            "global_presence": 35
+        },
+        "PLT Health Solutions": {
+            "category_dist": {"Branded Botanicals": 60, "Custom Formulations": 25, "Consulting": 10, "R&D": 5},
+            "revenue_trend": [280, 320, 360, 375],  # Converted to INR crores ($45M * 83)
+            "radar_values": [88, 75, 45, 70, 90],
+            "growth_rate": 13.5,
+            "market_share": 4.2,
+            "rnd_investment": 9.8,
+            "patents": 20,
+            "global_presence": 15
+        },
+        "AIDP": {
+            "category_dist": {"Ingredient Distribution": 45, "Custom Blends": 30, "Branded Ingredients": 20, "Consulting": 5},
+            "revenue_trend": [420, 480, 520, 540],  # Converted to INR crores ($65M * 83)
+            "radar_values": [70, 85, 52, 80, 75],
+            "growth_rate": 10.2,
+            "market_share": 6.2,
+            "rnd_investment": 4.5,
+            "patents": 15,
+            "global_presence": 20
+        },
+        "Layn Natural Ingredients": {
+            "category_dist": {"Botanical Extracts": 50, "Natural Sweeteners": 25, "Flavors": 15, "Colors": 10},
+            "revenue_trend": [1800, 2100, 2300, 2500],  # Estimated based on parent company
+            "radar_values": [82, 90, 92, 85, 80],
+            "growth_rate": 8.7,
+            "market_share": 15.2,
+            "rnd_investment": 5.8,
+            "patents": 45,
+            "global_presence": 40
+        },
+        "Euromed S.A.": {
+            "category_dist": {"Botanical Extracts": 70, "Standardized Compounds": 20, "Research Services": 7, "Consulting": 3},
+            "revenue_trend": [320, 360, 400, 425],  # Estimated segment revenue
+            "radar_values": [92, 80, 48, 75, 85],
+            "growth_rate": 6.2,
+            "market_share": 5.8,
+            "rnd_investment": 11.5,
+            "patents": 35,
+            "global_presence": 25
+        },
+        "Givaudan (Nutrition & Health)": {
+            "category_dist": {"Nutritional Ingredients": 40, "Flavors": 35, "Health Actives": 20, "Custom Solutions": 5},
+            "revenue_trend": [4800, 5200, 5600, 6150],  # Nutrition segment of total revenue
+            "radar_values": [95, 98, 98, 95, 90],
+            "growth_rate": 9.8,
+            "market_share": 25.8,
+            "rnd_investment": 8.5,
+            "patents": 200,
+            "global_presence": 60
+        },
+        "Kappa Bioscience": {
+            "category_dist": {"Vitamin K2": 60, "Carotenoids": 25, "Custom Actives": 10, "Research": 5},
+            "revenue_trend": [580, 650, 720, 790],  # Estimated from parent company
+            "radar_values": [90, 70, 75, 65, 95],
+            "growth_rate": 9.7,
+            "market_share": 3.2,
+            "rnd_investment": 12.8,
+            "patents": 25,
+            "global_presence": 20
+        },
+        "Arjuna Natural Extracts Ltd.": {
+            "category_dist": {"BCM-95 Curcumin": 40, "Amla Extracts": 25, "Omega-3": 20, "Other Extracts": 15},
+            "revenue_trend": [320, 345, 380, 410],
+            "radar_values": [95, 45, 35, 60, 90],
+            "growth_rate": 8.0,
+            "market_share": 4.8,
+            "rnd_investment": 6.5,
+            "patents": 8,
+            "global_presence": 25
+        }
+    }
+    return ingredient_profiles.get(company_name, ingredient_profiles["OmniActive Health Technologies"])
+
 def load_logo(company):
     try:
         return f"images/{company.lower().replace(' ', '_')}.png"
@@ -151,6 +285,28 @@ st.sidebar.title("🌿 Herbal Dashboard Assistant")
 company_names = data["Company Name"].unique().tolist()
 if "company" not in st.session_state:
     st.session_state.company = company_names[0]
+
+# Add ingredient supplier selector and navigation
+if not peers_df.empty:
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("#### 🏭 Ingredient Supplier Analysis")
+    
+    # Get list of ingredient suppliers for selection
+    ingredient_companies = peers_df['Company Name'].tolist()
+    
+    if "ingredient_company" not in st.session_state:
+        st.session_state.ingredient_company = ingredient_companies[0]
+    
+    selected_ingredient_company = st.sidebar.selectbox(
+        "🔬 Select Ingredient Supplier",
+        options=ingredient_companies,
+        index=ingredient_companies.index(st.session_state.ingredient_company) if st.session_state.ingredient_company in ingredient_companies else 0,
+        help="Choose an ingredient supplier for detailed analysis"
+    )
+    st.session_state.ingredient_company = selected_ingredient_company
+    
+    # Toggle for detailed ingredient analysis
+    show_ingredient_analysis = st.sidebar.checkbox("📊 Show Detailed Ingredient Analysis", value=False)
 
 # Company Selector
 selected_company = st.sidebar.selectbox(
@@ -237,6 +393,311 @@ with col4:
     st.markdown(f"*Website:* [{company_data['Website']}]({company_data['Website']})")
     st.markdown(f"*Type:* {company_data['Type']}")
     st.markdown(f"*Top Product:* {company_data['Top 3 Products'].split(',')[0].strip()}")
+
+# ------------------------------
+# NEW: Ingredient Supplier Peers (FY2024) - Moved here for visibility
+# ------------------------------
+st.markdown("---")
+st.subheader("🌿 Ingredient Supplier Peers (FY2024)")
+
+if peers_df.empty:
+    st.error("⚠️ Peer dataset not found (ingredient_competitors_detailed.csv)")
+else:
+    # st.success(f"✅ Loaded {len(peers_df)} ingredient supplier peers")
+    
+    # Show key metrics first
+    col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
+    with col_metrics1:
+        verified_count = len(peers_df[peers_df['Data Status'].str.contains('Verified', na=False)])
+        st.metric("Verified Companies", verified_count)
+    with col_metrics2:
+        estimated_count = len(peers_df[peers_df['Data Status'].str.contains('Estimated', na=False)])
+        st.metric("Estimated Data", estimated_count)
+    with col_metrics3:
+        needs_verification = len(peers_df[peers_df['Data Status'].str.contains('Needs Verification', na=False)])
+        st.metric("Needs Verification", needs_verification)
+    
+    # Show the data table
+    peer_view_cols = [
+        "Company Name", "Website", "Annual Revenue", "Growth Trend", "Data Status"
+    ]
+    existing_cols = [c for c in peer_view_cols if c in peers_df.columns]
+    st.dataframe(peers_df[existing_cols], hide_index=True, use_container_width=True)
+    
+    # Show the revenue chart if we have data
+    def _parse_any_revenue(val: str):
+        try:
+            return parse_revenue(val)
+        except Exception:
+            return 0
+    
+    peers_df["_rev_num"] = peers_df.get("Annual Revenue", "").apply(_parse_any_revenue)
+    if peers_df["_rev_num"].sum() > 0:
+        fig_peer_rev = px.bar(
+            peers_df.sort_values("_rev_num", ascending=False),
+            x="Company Name", y="_rev_num",
+            labels={"_rev_num": "Revenue (Cr INR approx)", "Company Name": "Company"},
+            title="Peer Revenues (FY2024, parsed where available)",
+            color="Company Name",
+            color_discrete_sequence=px.colors.sequential.Greens
+        )
+        fig_peer_rev.update_layout(xaxis_tickangle=-30, showlegend=False)
+        st.plotly_chart(fig_peer_rev, use_container_width=True)
+
+# ------------------------------
+# Individual Ingredient Supplier Analysis
+# ------------------------------
+if not peers_df.empty and 'show_ingredient_analysis' in locals() and show_ingredient_analysis:
+    st.markdown("---")
+    st.header(f"🏭 Detailed Analysis: {st.session_state.ingredient_company}")
+    
+    # Get selected company data
+    selected_peer = peers_df[peers_df['Company Name'] == st.session_state.ingredient_company].iloc[0]
+    ingredient_chart_data = get_ingredient_company_data(st.session_state.ingredient_company)
+    
+    # Company Overview Section
+    col_overview1, col_overview2, col_overview3, col_overview4 = st.columns(4)
+    
+    with col_overview1:
+        st.metric("Annual Revenue", selected_peer.get("Annual Revenue", "N/A"))
+        st.metric("Growth Rate", f"{ingredient_chart_data['growth_rate']:.1f}%")
+    
+    with col_overview2:
+        st.metric("Market Share", f"{ingredient_chart_data['market_share']:.1f}%")
+        st.metric("R&D Investment", f"{ingredient_chart_data['rnd_investment']:.1f}%")
+    
+    with col_overview3:
+        st.metric("Patents", f"{ingredient_chart_data['patents']}+")
+        st.metric("Global Presence", f"{ingredient_chart_data['global_presence']} countries")
+    
+    with col_overview4:
+        st.markdown(f"**Website:** [{selected_peer.get('Website', 'N/A')}]({selected_peer.get('Website', '#')})")
+        st.markdown(f"**Type:** {selected_peer.get('Type', 'N/A')}")
+        st.markdown(f"**Rating:** {selected_peer.get('Avg Online Rating', 'N/A')}")
+    
+    # Charts Section for Ingredient Companies
+    st.subheader("📊 Performance Analytics")
+    
+    col_chart1, col_chart2 = st.columns(2)
+    
+    with col_chart1:
+        # Product Portfolio Distribution
+        categories = list(ingredient_chart_data["category_dist"].keys())
+        values = list(ingredient_chart_data["category_dist"].values())
+        fig_portfolio = px.pie(
+            names=categories, 
+            values=values, 
+            title=f"{st.session_state.ingredient_company} - Product Portfolio",
+            color_discrete_sequence=px.colors.sequential.Blues
+        )
+        fig_portfolio.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig_portfolio, use_container_width=True)
+    
+    with col_chart2:
+        # Revenue Trend
+        years = [2021, 2022, 2023, 2024]
+        revenues = ingredient_chart_data["revenue_trend"]
+        
+        revenue_df = pd.DataFrame({
+            'Year': years,
+            'Revenue': revenues
+        })
+        
+        fig_revenue = px.bar(
+            revenue_df, 
+            x='Year', 
+            y='Revenue', 
+            title=f"{st.session_state.ingredient_company} - Revenue Trend",
+            color='Revenue',
+            color_continuous_scale='Blues'
+        )
+        
+        # Add value labels
+        for i, (year, revenue) in enumerate(zip(years, revenues)):
+            fig_revenue.add_annotation(
+                x=year, y=revenue,
+                text=f"₹{revenue:,.0f} Cr",
+                showarrow=False,
+                yshift=10,
+                font=dict(size=10, color="darkblue")
+            )
+        
+        fig_revenue.update_layout(showlegend=False, coloraxis_showscale=False)
+        fig_revenue.update_traces(marker_line_width=2, marker_line_color="darkblue")
+        st.plotly_chart(fig_revenue, use_container_width=True)
+    
+    # Performance Radar Chart
+    st.subheader("🎯 Performance Radar Analysis")
+    
+    radar_params = ['R&D Investment', 'Product Range', 'Revenue Scale', 'Market Presence', 'Innovation Score']
+    radar_values = ingredient_chart_data["radar_values"]
+    
+    fig_radar = px.line_polar(
+        r=radar_values, 
+        theta=radar_params, 
+        line_close=True,
+        title=f"{st.session_state.ingredient_company} - Performance Metrics"
+    )
+    
+    fig_radar.update_traces(
+        fill='toself',
+        line_color='#1f77b4',
+        fillcolor='rgba(31, 119, 180, 0.3)',
+        line_width=3,
+        marker=dict(size=8, color='#1f77b4')
+    )
+    
+    fig_radar.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True, 
+                range=[0, 100],
+                showticklabels=True,
+                ticks="outside",
+                tick0=0,
+                dtick=20,
+                gridcolor="lightgray",
+                gridwidth=2
+            ),
+            angularaxis=dict(
+                showticklabels=True,
+                tickfont=dict(size=12),
+                gridcolor="lightgray"
+            ),
+            bgcolor="white"
+        ),
+        showlegend=False,
+        width=600,
+        height=500
+    )
+    
+    st.plotly_chart(fig_radar, use_container_width=True)
+    
+    # Market Analysis
+    st.subheader("🌍 Market Analysis")
+    
+    col_market1, col_market2 = st.columns(2)
+    
+    with col_market1:
+        # Regional Distribution (simulated)
+        if 'Regional Sales Distribution' in selected_peer and pd.notna(selected_peer['Regional Sales Distribution']):
+            regions_text = selected_peer['Regional Sales Distribution']
+        else:
+            # Default distribution based on company profile
+            region_profiles = {
+                "OmniActive Health Technologies": ["Asia 40%", "Americas 35%", "Europe 25%"],
+                "Sabinsa Corporation": ["Americas 45%", "Asia 30%", "Europe 25%"],
+                "Indena S.p.A.": ["Europe 50%", "Americas 30%", "Asia 20%"],
+                "Synthite Industries Ltd.": ["Asia 60%", "Europe 25%", "Americas 15%"],
+                "PLT Health Solutions": ["Americas 70%", "Europe 20%", "Asia 10%"],
+                "AIDP": ["Americas 80%", "Europe 15%", "Asia 5%"]
+            }
+            regions_text = "; ".join(region_profiles.get(st.session_state.ingredient_company, ["Global distribution"]))
+        
+        st.markdown("**Regional Sales Distribution:**")
+        st.markdown(regions_text)
+        
+        # Growth metrics
+        st.markdown("**Key Metrics:**")
+        st.markdown(f"• Annual Growth: {ingredient_chart_data['growth_rate']:.1f}%")
+        st.markdown(f"• Market Share: {ingredient_chart_data['market_share']:.1f}%")
+        st.markdown(f"• Global Presence: {ingredient_chart_data['global_presence']} countries")
+    
+    with col_market2:
+        # Competitive Positioning
+        st.markdown("**Competitive Positioning:**")
+        
+        # Create a scatter plot for competitive positioning
+        competitors_data = []
+        for comp_name in ingredient_companies[:6]:  # Top 6 for comparison
+            comp_data = get_ingredient_company_data(comp_name)
+            competitors_data.append({
+                'Company': comp_name,
+                'Innovation': comp_data['radar_values'][4],  # Innovation score
+                'Market_Share': comp_data['market_share'],
+                'Revenue_Size': max(comp_data['revenue_trend'])
+            })
+        
+        comp_df = pd.DataFrame(competitors_data)
+        
+        fig_competitive = px.scatter(
+            comp_df,
+            x='Market_Share',
+            y='Innovation',
+            size='Revenue_Size',
+            color='Company',
+            title="Competitive Positioning Matrix",
+            labels={
+                'Market_Share': 'Market Share (%)',
+                'Innovation': 'Innovation Score',
+                'Revenue_Size': 'Revenue Size'
+            },
+            color_discrete_sequence=px.colors.qualitative.Set3
+        )
+        
+        # Highlight selected company
+        selected_point = comp_df[comp_df['Company'] == st.session_state.ingredient_company]
+        if not selected_point.empty:
+            fig_competitive.add_scatter(
+                x=selected_point['Market_Share'],
+                y=selected_point['Innovation'],
+                mode='markers',
+                marker=dict(size=20, symbol='star', color='red', line=dict(width=2, color='darkred')),
+                name='Selected Company',
+                showlegend=True
+            )
+        
+        fig_competitive.update_layout(height=400)
+        st.plotly_chart(fig_competitive, use_container_width=True)
+    
+    # Product Details
+    st.subheader("🧪 Product Portfolio Details")
+    
+    col_prod1, col_prod2 = st.columns(2)
+    
+    with col_prod1:
+        st.markdown("**Top Products:**")
+        top_products = selected_peer.get('Top 3 Products', 'Various specialized ingredients').split(';')
+        for i, product in enumerate(top_products[:3], 1):
+            st.markdown(f"{i}. {product.strip()}")
+        
+        st.markdown("**Ingredient Uniqueness:**")
+        st.markdown(selected_peer.get('Ingredient Uniqueness', 'Specialized formulations'))
+    
+    with col_prod2:
+        st.markdown("**Health Applications:**")
+        health_issues = selected_peer.get('Health Issues Targeted', 'Various wellness applications').split(';')
+        for issue in health_issues[:3]:
+            st.markdown(f"• {issue.strip()}")
+        
+        st.markdown("**Form Factors:**")
+        st.markdown(selected_peer.get('Form Factors', 'Various formats available'))
+    
+    # Financial Analysis
+    st.subheader("💰 Financial Performance")
+    
+    col_fin1, col_fin2, col_fin3 = st.columns(3)
+    
+    with col_fin1:
+        st.markdown("**Revenue Analysis:**")
+        current_revenue = max(ingredient_chart_data['revenue_trend'])
+        prev_revenue = ingredient_chart_data['revenue_trend'][-2]
+        growth = ((current_revenue - prev_revenue) / prev_revenue) * 100
+        
+        st.metric("Current Revenue", f"₹{current_revenue:,.0f} Cr")
+        st.metric("YoY Growth", f"{growth:.1f}%", delta=f"{growth:.1f}%")
+    
+    with col_fin2:
+        st.markdown("**Investment Metrics:**")
+        st.metric("R&D Investment", f"{ingredient_chart_data['rnd_investment']:.1f}%")
+        st.metric("Patents Portfolio", f"{ingredient_chart_data['patents']}+")
+    
+    with col_fin3:
+        st.markdown("**Market Position:**")
+        st.metric("Market Share", f"{ingredient_chart_data['market_share']:.1f}%")
+        st.metric("Global Reach", f"{ingredient_chart_data['global_presence']} countries")
+
+st.markdown("---")
 
 # ------------------------------
 # Charts Section
