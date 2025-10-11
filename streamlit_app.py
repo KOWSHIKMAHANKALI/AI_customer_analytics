@@ -1,5 +1,3 @@
-# herbal_dashboard_streamlit.py
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -8,10 +6,17 @@ import os
 import re
 import streamlit.components.v1 as components
 from difflib import get_close_matches
+import datetime
+import warnings
+# Suppress Streamlit cache coroutine warnings (non-fatal)
+warnings.filterwarnings("ignore", message="coroutine 'expire_cache' was never awaited")
 
-# Configure matplotlib for Streamlit
+# Reduce noisy gRPC/Google library logs
+os.environ.setdefault("GRPC_VERBOSITY", "ERROR")
+os.environ.setdefault("GRPC_TRACE", "")
+
 import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend for Streamlit
+matplotlib.use('Agg') 
 
 # ------------------------------
 # Page Config (Must be first!)
@@ -25,13 +30,27 @@ try:
     import google.generativeai as genai
     genai_available = True
     if "GEMINI_API_KEY" in st.secrets:
-        genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-        gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+        api_key = st.secrets["GEMINI_API_KEY"]
+        if api_key == "YOUR_ACTUAL_API_KEY_HERE":
+            genai_available = False
+            gemini_model = None
+            st.sidebar.warning("🔑 Please update your Gemini API key in .streamlit/secrets.toml")
+        else:
+            genai.configure(api_key=api_key)
+            gemini_model = genai.GenerativeModel("gemini-2.0-flash")
+            st.sidebar.success(f"✅ Gemini configured (Key: ...{api_key[-4:]})")
     else:
+        genai_available = False
         gemini_model = None
-except ImportError:
+        st.sidebar.warning("⚠️ GEMINI_API_KEY not found in secrets.toml")
+except ImportError as ie:
     genai_available = False
     gemini_model = None
+    st.sidebar.error(f"❌ Import error: {str(ie)}")
+except Exception as e:
+    genai_available = False
+    gemini_model = None
+    st.sidebar.error(f"❌ Gemini setup error: {str(e)}")
 
 # ------------------------------
 # Load Data
@@ -52,7 +71,7 @@ def load_peers():
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
-            st.write(f"DEBUG: Loaded peers CSV with {len(df)} rows")  # Debug line
+            st.write(f"DEBUG: Loaded peers CSV with {len(df)} rows") 
             return df
         except Exception as e:
             st.error(f"Error loading peers CSV: {e}")
@@ -78,8 +97,8 @@ def get_company_chart_data(company_name):
     company_profiles = {
         "Himalaya Wellness Company": {
             "category_dist": {"Supplements": 40, "Personal Care": 35, "Baby Care": 15, "Animal Care": 10},
-            "revenue_trend": [3200, 3400, 3600, 3760],  # Revenue in crores
-            "radar_values": [85, 78, 82, 90, 75],  # R&D, Product Range, Revenue, Market Presence, Innovation
+            "revenue_trend": [3200, 3400, 3600, 3760], 
+            "radar_values": [85, 78, 82, 90, 75], 
             "growth_rate": 5.5,
             "market_share": 12.5,
             "rnd_investment": 3.2
@@ -133,8 +152,8 @@ def get_ingredient_company_data(company_name):
     ingredient_profiles = {
         "OmniActive Health Technologies": {
             "category_dist": {"Carotenoids": 45, "Curcumin": 25, "Plant Extracts": 20, "Custom Blends": 10},
-            "revenue_trend": [580, 650, 700, 750],  # Revenue in crores INR
-            "radar_values": [95, 85, 75, 88, 92],  # R&D, Product Range, Revenue, Market Presence, Innovation
+            "revenue_trend": [580, 650, 700, 750], 
+            "radar_values": [95, 85, 75, 88, 92],  
             "growth_rate": 14.3,
             "market_share": 8.5,
             "rnd_investment": 8.2,
@@ -153,7 +172,7 @@ def get_ingredient_company_data(company_name):
         },
         "Indena S.p.A.": {
             "category_dist": {"Standardized Extracts": 50, "APIs": 30, "CDMO Services": 15, "Research": 5},
-            "revenue_trend": [600, 650, 700, 750],  # Converted to INR crores (€85M * 90)
+            "revenue_trend": [600, 650, 700, 750], 
             "radar_values": [98, 88, 72, 90, 95],
             "growth_rate": 9.5,
             "market_share": 12.5,
@@ -173,7 +192,7 @@ def get_ingredient_company_data(company_name):
         },
         "PLT Health Solutions": {
             "category_dist": {"Branded Botanicals": 60, "Custom Formulations": 25, "Consulting": 10, "R&D": 5},
-            "revenue_trend": [280, 320, 360, 375],  # Converted to INR crores ($45M * 83)
+            "revenue_trend": [280, 320, 360, 375], 
             "radar_values": [88, 75, 45, 70, 90],
             "growth_rate": 13.5,
             "market_share": 4.2,
@@ -183,7 +202,7 @@ def get_ingredient_company_data(company_name):
         },
         "AIDP": {
             "category_dist": {"Ingredient Distribution": 45, "Custom Blends": 30, "Branded Ingredients": 20, "Consulting": 5},
-            "revenue_trend": [420, 480, 520, 540],  # Converted to INR crores ($65M * 83)
+            "revenue_trend": [420, 480, 520, 540],  
             "radar_values": [70, 85, 52, 80, 75],
             "growth_rate": 10.2,
             "market_share": 6.2,
@@ -193,7 +212,7 @@ def get_ingredient_company_data(company_name):
         },
         "Layn Natural Ingredients": {
             "category_dist": {"Botanical Extracts": 50, "Natural Sweeteners": 25, "Flavors": 15, "Colors": 10},
-            "revenue_trend": [1800, 2100, 2300, 2500],  # Estimated based on parent company
+            "revenue_trend": [1800, 2100, 2300, 2500], 
             "radar_values": [82, 90, 92, 85, 80],
             "growth_rate": 8.7,
             "market_share": 15.2,
@@ -203,7 +222,7 @@ def get_ingredient_company_data(company_name):
         },
         "Euromed S.A.": {
             "category_dist": {"Botanical Extracts": 70, "Standardized Compounds": 20, "Research Services": 7, "Consulting": 3},
-            "revenue_trend": [320, 360, 400, 425],  # Estimated segment revenue
+            "revenue_trend": [320, 360, 400, 425], 
             "radar_values": [92, 80, 48, 75, 85],
             "growth_rate": 6.2,
             "market_share": 5.8,
@@ -213,7 +232,7 @@ def get_ingredient_company_data(company_name):
         },
         "Givaudan (Nutrition & Health)": {
             "category_dist": {"Nutritional Ingredients": 40, "Flavors": 35, "Health Actives": 20, "Custom Solutions": 5},
-            "revenue_trend": [4800, 5200, 5600, 6150],  # Nutrition segment of total revenue
+            "revenue_trend": [4800, 5200, 5600, 6150], 
             "radar_values": [95, 98, 98, 95, 90],
             "growth_rate": 9.8,
             "market_share": 25.8,
@@ -223,7 +242,7 @@ def get_ingredient_company_data(company_name):
         },
         "Kappa Bioscience": {
             "category_dist": {"Vitamin K2": 60, "Carotenoids": 25, "Custom Actives": 10, "Research": 5},
-            "revenue_trend": [580, 650, 720, 790],  # Estimated from parent company
+            "revenue_trend": [580, 650, 720, 790], 
             "radar_values": [90, 70, 75, 65, 95],
             "growth_rate": 9.7,
             "market_share": 3.2,
@@ -328,15 +347,48 @@ user_input = st.sidebar.text_input(
     placeholder="e.g. What is the market share of Himalaya?"
 )
 
+# Toggle: restrict model to dataset-only responses
+dataset_only = st.sidebar.checkbox(
+    "🔒 Use dashboard data only", 
+    value=False, 
+    help="If checked, Pharmabot will only answer using data from the dashboard CSVs and will reply 'I don't know...' when data is insufficient."
+)
+
 # Initialize Gemini session keys
 if "last_gemini_input" not in st.session_state:
     st.session_state.last_gemini_input = ""
 if "gemini_response_text" not in st.session_state:
     st.session_state.gemini_response_text = ""
 
+def build_context_for_question(user_input: str, data_df: pd.DataFrame, peers_df: pd.DataFrame, max_peers: int = 3) -> str:
+    """Build a short context snippet from the main CSV and peers CSV relevant to the user_input."""
+    ctx = []
+    try:
+        # include currently selected company row first
+        if "company" in st.session_state and st.session_state.company:
+            row = data_df[data_df["Company Name"] == st.session_state.company]
+            if not row.empty:
+                r = row.iloc[0]
+                ctx.append(f"Company: {r['Company Name']}; Revenue: {r.get('Annual Revenue','N/A')}; TopProducts: {r.get('Top 3 Products','')}; Growth: {r.get('Growth Trend','N/A')}")
+        
+        # fuzzy match other companies mentioned in the query
+        company_matches = get_close_matches(user_input.lower(), data_df["Company Name"].str.lower().tolist(), n=2, cutoff=0.4)
+        for m in company_matches:
+            row = data_df[data_df["Company Name"].str.lower() == m].iloc[0]
+            ctx.append(f"Company: {row['Company Name']}; Revenue: {row.get('Annual Revenue','N/A')}; TopProducts: {row.get('Top 3 Products','')}; Growth: {row.get('Growth Trend','N/A')}")
+        
+        # include up to max_peers from peers_df that match query keywords
+        if not peers_df.empty:
+            peer_matches = get_close_matches(user_input.lower(), peers_df["Company Name"].str.lower().tolist(), n=max_peers, cutoff=0.3)
+            for pm in peer_matches:
+                prow = peers_df[peers_df["Company Name"].str.lower() == pm].iloc[0]
+                ctx.append(f"Peer: {prow.get('Company Name','')}; Revenue: {prow.get('Annual Revenue','N/A')}; DataStatus: {prow.get('Data Status','N/A')}")
+    except Exception:
+        pass
+    return "\n".join(ctx) if ctx else "No relevant dataset info found."
+
 # Trigger Gemini API call
 if user_input and user_input != st.session_state.last_gemini_input:
-    # Debug info (temporary)
     debug_info = f"Debug: genai_available={genai_available}, gemini_model={gemini_model is not None}"
     
     if not genai_available:
@@ -344,15 +396,66 @@ if user_input and user_input != st.session_state.last_gemini_input:
     elif not gemini_model:
         st.session_state.gemini_response_text = f"🔧 Gemini AI is ready but needs API key. Please add GEMINI_API_KEY to .streamlit/secrets.toml file. {debug_info}"
     else:
+        context_text = build_context_for_question(user_input, data, peers_df)
+        
+        # Construct safe prompt
+        if dataset_only:
+            prompt = f"""
+CONTEXT (from dashboard CSVs):
+{context_text}
+
+INSTRUCTIONS:
+- Use ONLY the information in CONTEXT to answer the question below.
+- If the answer is not present in CONTEXT, reply exactly: "I don't know based on the provided data."
+- Keep the answer concise (1-3 sentences).
+
+QUESTION:
+{user_input}
+"""
+        else:
+            prompt = f"""
+CONTEXT (from dashboard CSVs; optional):
+{context_text}
+
+INSTRUCTIONS:
+- Prefer using the CONTEXT when it is relevant.
+- You may supplement with general knowledge, but state clearly when you do so.
+- Keep the answer concise (1-3 sentences).
+
+QUESTION:
+{user_input}
+"""
+        
         with st.spinner("Pharmabot is thinking..."):
             try:
-                gemini_response = gemini_model.generate_content(f"""
-                You are a knowledgeable assistant on the Indian herbal supplement industry.
-                Answer this user question clearly and briefly: "{user_input}"
-                """)
-                st.session_state.gemini_response_text = gemini_response.text
+                gemini_response = gemini_model.generate_content(prompt)
+                resp_text = getattr(gemini_response, "text", None) or str(gemini_response)
+                st.session_state.gemini_response_text = resp_text
+                
+                # Log query for audit
+                try:
+                    log_line = {
+                        "timestamp": datetime.datetime.utcnow().isoformat(),
+                        "user_input": user_input,
+                        "dataset_only": dataset_only,
+                        "context_excerpt": (context_text[:500] + "...") if len(context_text) > 500 else context_text,
+                        "response": resp_text[:1000] if len(resp_text) > 1000 else resp_text
+                    }
+                    with open("gemini_queries.log", "a", encoding="utf-8") as lf:
+                        lf.write(str(log_line) + "\n")
+                except Exception:
+                    pass
+                    
             except Exception as e:
-                st.session_state.gemini_response_text = "⚠️ Gemini failed. Check your API key or connection."
+                error_details = str(e)
+                if "API_KEY" in error_details.upper():
+                    st.session_state.gemini_response_text = f"🔑 API Key Error: {error_details}"
+                elif "QUOTA" in error_details.upper() or "LIMIT" in error_details.upper():
+                    st.session_state.gemini_response_text = f"📊 Quota/Rate Limit: {error_details}"
+                elif "NETWORK" in error_details.upper() or "CONNECTION" in error_details.upper():
+                    st.session_state.gemini_response_text = f"🌐 Connection Error: {error_details}"
+                else:
+                    st.session_state.gemini_response_text = f"⚠️ Gemini Error: {error_details}"
 
     st.session_state.last_gemini_input = user_input
 
