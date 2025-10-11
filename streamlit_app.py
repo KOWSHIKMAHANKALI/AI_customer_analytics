@@ -1237,3 +1237,425 @@ geo_countries = extract_countries(company_data['Geographical Presence'])
 fig_geo = px.choropleth(locations=geo_countries, locationmode="ISO-3", color=[1]*len(geo_countries),
                         color_continuous_scale=px.colors.sequential.Greens, title="Geographical Presence (by Country)")
 st.plotly_chart(fig_geo, use_container_width=True, key="geo_choropleth")
+
+# ------------------------------
+# MARKETING INTELLIGENCE SUITE
+# ------------------------------
+st.markdown("---")
+st.header("📊 Marketing Intelligence Suite")
+st.markdown("*Advanced marketing analytics and AI-powered customer engagement tools*")
+
+# Create tabs for different marketing modules
+marketing_tab1, marketing_tab2, marketing_tab3 = st.tabs([
+    "🎯 Social Media & ORM", 
+    "🤖 ML-Powered Marketing", 
+    "💬 AI Customer Assistant"
+])
+
+# Tab A: Online Reputation Management & Social Media Listening
+with marketing_tab1:
+    st.subheader("🔍 Online Reputation Management")
+    st.markdown("**Integrated with Konnect Insights-style Social Media Listening**")
+    
+    col_orm1, col_orm2 = st.columns([2, 1])
+    
+    with col_orm1:
+        # Simulated social media metrics for the selected company
+        company_social_data = {
+            "Himalaya Wellness Company": {
+                "mention_volume": 15420,
+                "sentiment_positive": 72,
+                "sentiment_neutral": 18,
+                "sentiment_negative": 10,
+                "engagement_rate": 4.2,
+                "top_platforms": ["Instagram", "Facebook", "Twitter", "YouTube"],
+                "trending_topics": ["Natural ingredients", "Ayurveda", "Baby care", "Immunity"],
+                "competitor_mentions": {"Dabur": 8500, "Patanjali": 12000, "Baidyanath": 3200}
+            },
+            "Dabur India Ltd.": {
+                "mention_volume": 28750,
+                "sentiment_positive": 68,
+                "sentiment_neutral": 22,
+                "sentiment_negative": 10,
+                "engagement_rate": 5.8,
+                "top_platforms": ["Instagram", "Facebook", "YouTube", "Twitter"],
+                "trending_topics": ["Chyawanprash", "Hair care", "Real juice", "Ayurveda"],
+                "competitor_mentions": {"Himalaya": 6200, "Patanjali": 14500, "Baidyanath": 2800}
+            },
+            "Patanjali Ayurved": {
+                "mention_volume": 32100,
+                "sentiment_positive": 65,
+                "sentiment_neutral": 25,
+                "sentiment_negative": 10,
+                "engagement_rate": 6.1,
+                "top_platforms": ["YouTube", "Facebook", "Instagram", "Twitter"],
+                "trending_topics": ["Yoga", "Natural products", "Swadeshi", "Ramdev"],
+                "competitor_mentions": {"Dabur": 9800, "Himalaya": 4500, "Baidyanath": 2200}
+            }
+        }
+        
+        # Get data for current company (default to Himalaya if not found)
+        social_data = company_social_data.get(st.session_state.company, company_social_data["Himalaya Wellness Company"])
+        
+        # Display key metrics
+        col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
+        with col_metric1:
+            st.metric("Monthly Mentions", f"{social_data['mention_volume']:,}")
+        with col_metric2:
+            st.metric("Positive Sentiment", f"{social_data['sentiment_positive']}%", 
+                     delta=f"+{social_data['sentiment_positive'] - 65}%")
+        with col_metric3:
+            st.metric("Engagement Rate", f"{social_data['engagement_rate']}%")
+        with col_metric4:
+            total_competitor_mentions = sum(social_data['competitor_mentions'].values())
+            st.metric("Share of Voice", f"{social_data['mention_volume'] / (social_data['mention_volume'] + total_competitor_mentions) * 100:.1f}%")
+        
+        # Sentiment Analysis Chart
+        sentiment_df = pd.DataFrame({
+            'Sentiment': ['Positive', 'Neutral', 'Negative'],
+            'Percentage': [social_data['sentiment_positive'], social_data['sentiment_neutral'], social_data['sentiment_negative']],
+            'Color': ['#2E8B57', '#FFD700', '#DC143C']
+        })
+        
+        fig_sentiment = px.pie(sentiment_df, values='Percentage', names='Sentiment', 
+                              title=f"{st.session_state.company} - Sentiment Distribution",
+                              color='Sentiment',
+                              color_discrete_map={'Positive': '#2E8B57', 'Neutral': '#FFD700', 'Negative': '#DC143C'})
+        st.plotly_chart(fig_sentiment, use_container_width=True)
+        
+        # Platform Performance
+        platform_engagement = [4.5, 3.8, 3.2, 5.1]  # Simulated engagement rates
+        platform_df = pd.DataFrame({
+            'Platform': social_data['top_platforms'],
+            'Engagement_Rate': platform_engagement
+        })
+        
+        fig_platform = px.bar(platform_df, x='Platform', y='Engagement_Rate',
+                             title="Platform-wise Engagement Rates",
+                             color='Engagement_Rate',
+                             color_continuous_scale='Greens')
+        st.plotly_chart(fig_platform, use_container_width=True)
+    
+    with col_orm2:
+        st.markdown("**🔥 Trending Topics**")
+        for i, topic in enumerate(social_data['trending_topics'][:4], 1):
+            st.markdown(f"{i}. **{topic}**")
+        
+        st.markdown("**⚔️ Competitor Mentions**")
+        for comp, mentions in social_data['competitor_mentions'].items():
+            st.markdown(f"• **{comp}**: {mentions:,}")
+        
+        # Crisis Alert Simulation
+        st.markdown("**🚨 Alert System**")
+        if social_data['sentiment_negative'] > 15:
+            st.error("⚠️ High negative sentiment detected")
+        elif social_data['sentiment_negative'] > 10:
+            st.warning("⚠️ Monitor negative sentiment")
+        else:
+            st.success("✅ Sentiment within normal range")
+    
+    # Social Media Listening Integration
+    st.markdown("### 📡 Social Media Listening Integration")
+    st.info("**Integration with Konnect Insights or similar platforms:**")
+    
+    col_integration1, col_integration2 = st.columns(2)
+    with col_integration1:
+        st.markdown("""
+        **Real-time Monitoring Features:**
+        - Brand mention tracking across 50+ platforms
+        - Hashtag performance analysis
+        - Influencer identification and reach
+        - Crisis detection with automated alerts
+        - Competitor benchmarking
+        """)
+    
+    with col_integration2:
+        st.markdown("""
+        **API Integration Capabilities:**
+        - Social media platform APIs (Twitter, Facebook, Instagram)
+        - News and blog monitoring
+        - Review site tracking (Google, Amazon, etc.)
+        - Custom keyword and phrase monitoring
+        - Automated sentiment scoring
+        """)
+
+# Tab B: ML-Powered Marketing Analytics
+with marketing_tab2:
+    st.subheader("🎯 ML-Powered Marketing Analytics")
+    st.markdown("**Advanced algorithms for customer insights and targeted marketing**")
+    
+    # Customer Segmentation
+    st.markdown("### 👥 Customer Segmentation & Clustering")
+    
+    # Generate sample customer data for ML demo
+    import numpy as np
+    np.random.seed(42)
+    
+    # Simulate customer segments
+    n_customers = 1000
+    segments = ['Health Enthusiasts', 'Price Conscious', 'Premium Buyers', 'Loyal Customers', 'Occasional Users']
+    
+    customer_data = pd.DataFrame({
+        'Customer_ID': range(1, n_customers + 1),
+        'Age': np.random.normal(35, 12, n_customers).astype(int),
+        'Annual_Spending': np.random.lognormal(8, 0.5, n_customers).astype(int),
+        'Purchase_Frequency': np.random.poisson(8, n_customers),
+        'Avg_Order_Value': np.random.lognormal(6, 0.3, n_customers).astype(int),
+        'Segment': np.random.choice(segments, n_customers, p=[0.25, 0.20, 0.15, 0.25, 0.15]),
+        'Churn_Risk': np.random.choice(['Low', 'Medium', 'High'], n_customers, p=[0.6, 0.3, 0.1])
+    })
+    
+    col_seg1, col_seg2 = st.columns(2)
+    
+    with col_seg1:
+        # Segment distribution
+        segment_counts = customer_data['Segment'].value_counts()
+        fig_segments = px.pie(values=segment_counts.values, names=segment_counts.index,
+                             title="Customer Segment Distribution",
+                             color_discrete_sequence=px.colors.qualitative.Set3)
+        st.plotly_chart(fig_segments, use_container_width=True)
+    
+    with col_seg2:
+        # Spending by segment
+        segment_spending = customer_data.groupby('Segment')['Annual_Spending'].mean().sort_values(ascending=False)
+        fig_spending = px.bar(x=segment_spending.index, y=segment_spending.values,
+                             title="Average Annual Spending by Segment",
+                             color=segment_spending.values,
+                             color_continuous_scale='Greens')
+        st.plotly_chart(fig_spending, use_container_width=True)
+    
+    # Churn Prediction
+    st.markdown("### 🔄 Churn Prediction & Retention")
+    
+    col_churn1, col_churn2, col_churn3 = st.columns(3)
+    
+    with col_churn1:
+        churn_counts = customer_data['Churn_Risk'].value_counts()
+        st.metric("Low Risk Customers", f"{churn_counts.get('Low', 0):,}")
+        st.metric("Total Customer Base", f"{len(customer_data):,}")
+    
+    with col_churn2:
+        st.metric("Medium Risk", f"{churn_counts.get('Medium', 0):,}")
+        retention_rate = (churn_counts.get('Low', 0) + churn_counts.get('Medium', 0)) / len(customer_data) * 100
+        st.metric("Retention Rate", f"{retention_rate:.1f}%")
+    
+    with col_churn3:
+        st.metric("High Risk", f"{churn_counts.get('High', 0):,}", delta=f"-{churn_counts.get('High', 0)}")
+        st.metric("Churn Rate", f"{churn_counts.get('High', 0) / len(customer_data) * 100:.1f}%")
+    
+    # ML Model Performance Simulation
+    st.markdown("### 🤖 ML Model Performance")
+    
+    col_ml1, col_ml2 = st.columns(2)
+    
+    with col_ml1:
+        ml_metrics = pd.DataFrame({
+            'Model': ['Random Forest', 'XGBoost', 'Logistic Regression', 'Neural Network'],
+            'Accuracy': [0.87, 0.89, 0.82, 0.85],
+            'Precision': [0.85, 0.88, 0.80, 0.83],
+            'Recall': [0.86, 0.87, 0.81, 0.84]
+        })
+        
+        fig_ml = px.bar(ml_metrics, x='Model', y=['Accuracy', 'Precision', 'Recall'],
+                       title="ML Model Performance Comparison",
+                       barmode='group',
+                       color_discrete_sequence=['#2E8B57', '#228B22', '#32CD32'])
+        st.plotly_chart(fig_ml, use_container_width=True)
+    
+    with col_ml2:
+        st.markdown("**🎯 Targeting Recommendations:**")
+        
+        # Simulated targeting insights
+        high_value_customers = customer_data[customer_data['Annual_Spending'] > customer_data['Annual_Spending'].quantile(0.8)]
+        
+        st.markdown(f"• **High-Value Segment**: {len(high_value_customers)} customers ({len(high_value_customers)/len(customer_data)*100:.1f}%)")
+        st.markdown(f"• **Average Spending**: ₹{high_value_customers['Annual_Spending'].mean():,.0f}")
+        st.markdown(f"• **Recommended Action**: Premium product campaigns")
+        
+        at_risk_customers = customer_data[customer_data['Churn_Risk'] == 'High']
+        st.markdown(f"• **At-Risk Customers**: {len(at_risk_customers)} customers")
+        st.markdown(f"• **Recommended Action**: Retention campaigns with discounts")
+    
+    # Campaign Optimization
+    st.markdown("### 📈 Campaign Optimization")
+    
+    campaign_results = pd.DataFrame({
+        'Campaign': ['Email Newsletter', 'Social Media Ads', 'Influencer Collab', 'TV Advertisements', 'Print Media'],
+        'Cost_Per_Acquisition': [120, 85, 200, 450, 350],
+        'Conversion_Rate': [3.2, 4.8, 6.1, 2.1, 1.8],
+        'ROI': [2.8, 4.2, 3.9, 1.9, 1.4]
+    })
+    
+    fig_campaign = px.scatter(campaign_results, x='Cost_Per_Acquisition', y='Conversion_Rate',
+                             size='ROI', color='Campaign',
+                             title="Campaign Performance Analysis",
+                             labels={'Cost_Per_Acquisition': 'Cost per Acquisition (₹)', 
+                                   'Conversion_Rate': 'Conversion Rate (%)'},
+                             hover_data=['ROI'])
+    st.plotly_chart(fig_campaign, use_container_width=True)
+
+# Tab C: AI Customer Assistant
+with marketing_tab3:
+    st.subheader("🤖 AI Customer Assistant")
+    st.markdown("**Enhanced chatbot for customer support and engagement**")
+    
+    col_chat1, col_chat2 = st.columns([2, 1])
+    
+    with col_chat1:
+        st.markdown("### 💬 Customer Service Chatbot")
+        
+        # Enhanced chatbot interface
+        chat_container = st.container()
+        
+        # Initialize chat history
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = [
+                {"role": "assistant", "content": f"Hello! I'm the {st.session_state.company} customer service assistant. How can I help you today?"}
+            ]
+        
+        # Display chat history
+        for message in st.session_state.chat_history:
+            if message["role"] == "user":
+                st.markdown(f"**You:** {message['content']}")
+            else:
+                st.markdown(f"**Assistant:** {message['content']}")
+        
+        # Customer service topics
+        st.markdown("**🔍 Quick Help Topics:**")
+        help_topics = st.selectbox("Choose a topic:", [
+            "Product Information",
+            "Order Status",
+            "Ingredient Questions", 
+            "Dosage Instructions",
+            "Side Effects",
+            "Return Policy",
+            "Store Locator",
+            "Bulk Orders"
+        ])
+        
+        if st.button("Get Help", key="help_button"):
+            # Simulate AI responses based on topic
+            responses = {
+                "Product Information": f"I can help you learn about {st.session_state.company}'s products. We specialize in {company_data['Top 3 Products']}. Would you like detailed information about any specific product?",
+                "Order Status": "To check your order status, please provide your order number. You can also track orders through our website or mobile app.",
+                "Ingredient Questions": f"Our products use high-quality ingredients. {company_data['Ingredient Uniqueness']} All ingredients are sourced responsibly and tested for purity.",
+                "Dosage Instructions": "Dosage varies by product and individual needs. Please check the product label or consult with our healthcare team for personalized advice.",
+                "Side Effects": "Our products are generally well-tolerated. However, if you experience any adverse reactions, please discontinue use and consult a healthcare professional.",
+                "Return Policy": "We offer a 30-day return policy for unopened products. Returns are processed within 5-7 business days of receipt.",
+                "Store Locator": "You can find our products at major pharmacies and health stores. Use our store locator on the website to find the nearest retailer.",
+                "Bulk Orders": "For bulk orders, please contact our B2B sales team. We offer special pricing for quantities over 100 units."
+            }
+            
+            response = responses.get(help_topics, "I'm here to help! Please let me know what specific information you need.")
+            st.session_state.chat_history.append({"role": "user", "content": f"Help with: {help_topics}"})
+            st.session_state.chat_history.append({"role": "assistant", "content": response})
+            st.rerun()
+        
+        # Custom query input
+        custom_query = st.text_input("Ask a custom question:", placeholder="e.g., What are the benefits of Ashwagandha?")
+        
+        if st.button("Ask", key="custom_ask") and custom_query:
+            if genai_available and gemini_model:
+                # Use Gemini for customer service responses
+                customer_service_prompt = f"""
+                You are a helpful customer service representative for {st.session_state.company}, an Indian herbal/ayurvedic company.
+                
+                Company Information:
+                - Products: {company_data['Top 3 Products']}
+                - Specialization: {company_data['Ingredient Uniqueness']}
+                - Health Focus: {company_data['Health Issues Targeted']}
+                
+                Customer Question: {custom_query}
+                
+                Provide a helpful, professional response. If the question is about:
+                - Products: Reference our actual product line
+                - Health: Give general wellness information but recommend consulting healthcare professionals
+                - Orders/Returns: Provide standard policy information
+                - Ingredients: Explain benefits in simple terms
+                
+                Keep the response conversational, helpful, and under 3 sentences.
+                """
+                
+                try:
+                    response = gemini_model.generate_content(customer_service_prompt)
+                    ai_response = response.text if hasattr(response, 'text') else str(response)
+                    
+                    st.session_state.chat_history.append({"role": "user", "content": custom_query})
+                    st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"AI Assistant temporarily unavailable: {str(e)}")
+            else:
+                # Fallback response without AI
+                fallback_response = f"Thank you for your question about '{custom_query}'. Our customer service team will get back to you shortly. In the meantime, you can browse our product information or contact us directly."
+                st.session_state.chat_history.append({"role": "user", "content": custom_query})
+                st.session_state.chat_history.append({"role": "assistant", "content": fallback_response})
+                st.rerun()
+    
+    with col_chat2:
+        st.markdown("**📊 Chat Analytics**")
+        
+        # Simulated chat metrics
+        chat_metrics = {
+            "Daily Queries": 450,
+            "Resolution Rate": 87,
+            "Avg Response Time": "2.3 min",
+            "Customer Satisfaction": 4.2
+        }
+        
+        for metric, value in chat_metrics.items():
+            if isinstance(value, int):
+                st.metric(metric, f"{value:,}")
+            elif isinstance(value, float):
+                st.metric(metric, f"{value:.1f}/5.0")
+            else:
+                st.metric(metric, value)
+        
+        st.markdown("**🔥 Top Query Types**")
+        query_types = ["Product Info (35%)", "Dosage (22%)", "Ingredients (18%)", "Orders (15%)", "Other (10%)"]
+        for query in query_types:
+            st.markdown(f"• {query}")
+        
+        st.markdown("**💡 Features:**")
+        st.markdown("""
+        - ✅ 24/7 Availability
+        - ✅ Multi-language Support
+        - ✅ Product Recommendations
+        - ✅ Order Tracking
+        - ✅ Health Information
+        - ✅ Escalation to Human Agents
+        """)
+        
+        # Integration options
+        st.markdown("**🔌 Integration Options**")
+        integration_options = st.multiselect("Select channels:", [
+            "Website Widget",
+            "WhatsApp Business", 
+            "Facebook Messenger",
+            "Mobile App",
+            "Email Support",
+            "Voice Assistant"
+        ])
+        
+        if integration_options:
+            st.success(f"Selected: {', '.join(integration_options)}")
+
+# Marketing Summary
+st.markdown("---")
+st.markdown("### 🎯 Marketing Intelligence Summary")
+
+col_summary1, col_summary2, col_summary3 = st.columns(3)
+
+with col_summary1:
+    st.markdown("**🔍 Social Media Insights**")
+    st.info(f"• {social_data['mention_volume']:,} monthly mentions\n• {social_data['sentiment_positive']}% positive sentiment\n• Top platform: {social_data['top_platforms'][0]}")
+
+with col_summary2:
+    st.markdown("**🤖 ML Analytics**") 
+    retention_customers = len(customer_data[customer_data['Churn_Risk'] != 'High'])
+    st.info(f"• {len(customer_data):,} customers analyzed\n• {retention_customers/len(customer_data)*100:.1f}% retention rate\n• {len(segments)} distinct segments")
+
+with col_summary3:
+    st.markdown("**💬 AI Assistant**")
+    st.info(f"• {chat_metrics['Daily Queries']} daily interactions\n• {chat_metrics['Resolution Rate']}% resolution rate\n• {chat_metrics['Customer Satisfaction']}/5.0 satisfaction")
