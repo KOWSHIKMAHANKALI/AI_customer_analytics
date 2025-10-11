@@ -9,3 +9,6 @@ geopandas
 google-generativeai
 scikit-learn
 seaborn
+requests
+beautifulsoup4
+lxml
