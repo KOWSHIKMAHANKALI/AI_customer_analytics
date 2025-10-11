@@ -68,22 +68,58 @@ class OmniActiveDataCollector:
                 "snippet": "New research confirms CurcuWIN's superior bioavailability compared to standard curcumin extracts."
             },
             {
-                "title": "Capsimax Thermogenic Properties Validated",
-                "url": "https://www.naturalproductsinsider.com/capsimax-thermogenic",
+                "title": "Capsimax Market Competition Intensifies",
+                "url": "https://www.naturalproductsinsider.com/capsimax-competition",
                 "source": "Natural Products Insider",
                 "ingredient": "Capsimax",
-                "sentiment": "positive",
+                "sentiment": "neutral",
                 "date": "2024-03-10",
-                "snippet": "Clinical trial validates Capsimax's role in supporting healthy weight management through thermogenesis."
+                "snippet": "Market analysis shows increased competition in the thermogenic ingredients space, with several new players entering the market alongside established brands like Capsimax."
             },
             {
-                "title": "BioPerine Enhances Nutrient Absorption",
-                "url": "https://www.supplementbusiness.com/bioperine-absorption",
+                "title": "BioPerine Patent Questions Raised",
+                "url": "https://www.supplementbusiness.com/bioperine-patent",
                 "source": "Supplement Business",
                 "ingredient": "BioPerine",
-                "sentiment": "positive",
+                "sentiment": "neutral",
                 "date": "2024-01-30",
-                "snippet": "Research confirms BioPerine significantly enhances the absorption of various nutrients and supplements."
+                "snippet": "Industry experts discuss patent landscape and competitive challenges facing established bioenhancer ingredients in the current market."
+            },
+            {
+                "title": "Oligopin Supply Chain Challenges",
+                "url": "https://www.nutraingredients.com/oligopin-supply",
+                "source": "NutraIngredients",
+                "ingredient": "Oligopin",
+                "sentiment": "negative",
+                "date": "2024-02-28",
+                "snippet": "Manufacturers report supply chain disruptions affecting availability of premium pine bark extracts, leading to increased costs and delivery delays."
+            },
+            {
+                "title": "ForsLean Clinical Data Under Review",
+                "url": "https://www.nutritionaloutlook.com/forslean-review",
+                "source": "Nutritional Outlook",
+                "ingredient": "ForsLean",
+                "sentiment": "neutral",
+                "date": "2024-03-05",
+                "snippet": "Regulatory bodies continue evaluation of weight management claims for coleus forskohlii extracts as industry awaits updated guidelines."
+            },
+            {
+                "title": "Sabeet Pricing Concerns in Sports Nutrition",
+                "url": "https://www.sportsnutritioninsider.com/sabeet-pricing",
+                "source": "Sports Nutrition Insider", 
+                "ingredient": "Sabeet",
+                "sentiment": "negative",
+                "date": "2024-02-15",
+                "snippet": "Sports nutrition manufacturers express concerns over premium pricing of branded beetroot extracts impacting product margins and market accessibility."
+            },
+            {
+                "title": "Lutein Market Consolidation Trends",
+                "url": "https://www.nutraingredients.com/lutein-consolidation",
+                "source": "NutraIngredients",
+                "ingredient": "Lutemax 2020",
+                "sentiment": "neutral",
+                "date": "2024-03-20",
+                "snippet": "Market analysis reveals ongoing consolidation in the lutein and zeaxanthin space as larger players acquire smaller ingredient suppliers."
             }
         ]
 
@@ -121,7 +157,7 @@ class OmniActiveDataCollector:
                 "source": mention["source"],
                 "ingredient": mention["ingredient"],
                 "sentiment": mention["sentiment"],
-                "sentiment_score": 4.5 if mention["sentiment"] == "positive" else 3.0,
+                "sentiment_score": 4.5 if mention["sentiment"] == "positive" else (3.0 if mention["sentiment"] == "neutral" else 2.2),
                 "date": mention["date"],
                 "snippet": mention["snippet"],
                 "category": "Industry News"
