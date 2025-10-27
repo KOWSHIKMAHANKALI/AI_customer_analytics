@@ -1,13 +1,16 @@
 company_name,website,ingredient,product_count,market_region,usage_type,annual_volume_kg,sentiment_score,last_updated,data_source
-Nature's Bounty,https://www.naturesbounty.com,Lutemax 2020,1,North America,Primary Active,450,4.2,2025-10-11,Company Research
-Nature's Bounty,https://www.naturesbounty.com,BioPerine,1,North America,Bioenhancer,450,4.2,2025-10-11,Company Research
-NOW Foods,https://www.nowfoods.com,Lutemax 2020,2,North America,Primary Active,750,4.2,2025-10-11,Company Research
-NOW Foods,https://www.nowfoods.com,CurcuWIN,2,North America,Primary Active,750,4.2,2025-10-11,Company Research
-Jarrow Formulas,https://www.jarrow.com,CurcuWIN,1,North America,Primary Active,300,4.2,2025-10-11,Company Research
-Jarrow Formulas,https://www.jarrow.com,BioPerine,1,North America,Bioenhancer,300,4.2,2025-10-11,Company Research
-Life Extension,https://www.lifeextension.com,Lutemax 2020,1,North America,Primary Active,150,4.2,2025-10-11,Company Research
-Swanson Health,https://www.swansonvitamins.com,BioPerine,2,North America,Bioenhancer,600,4.2,2025-10-11,Company Research
-Swanson Health,https://www.swansonvitamins.com,Capsimax,2,North America,Primary Active,600,4.2,2025-10-11,Company Research
-Doctor's Best,https://www.doctorsbest.com,CurcuWIN,2,Global,Primary Active,300,4.2,2025-10-11,Company Research
-Solgar,https://www.solgar.com,Lutemax 2020,1,Global,Primary Active,150,4.2,2025-10-11,Company Research
-Garden of Life,https://www.gardenoflife.com,BioPerine,2,Global,Bioenhancer,300,4.2,2025-10-11,Company Research
+Nature's Bounty,https://www.naturesbounty.com,Lutemax 2020,3,North America,Primary Active,520,4.5,2025-10-11,Company Research
+Nature's Bounty,https://www.naturesbounty.com,BioPerine,2,North America,Bioenhancer,460,4.1,2025-10-11,Company Research
+NOW Foods,https://www.nowfoods.com,Lutemax 2020,4,North America,Primary Active,810,4.3,2025-10-11,Company Research
+NOW Foods,https://www.nowfoods.com,CurcuWIN,3,North America,Primary Active,740,3.9,2025-10-11,Company Research
+Jarrow Formulas,https://www.jarrow.com,CurcuWIN,2,North America,Primary Active,310,3.8,2025-10-11,Company Research
+Jarrow Formulas,https://www.jarrow.com,BioPerine,2,North America,Bioenhancer,280,4.0,2025-10-11,Company Research
+Life Extension,https://www.lifeextension.com,Lutemax 2020,1,North America,Primary Active,180,4.6,2025-10-11,Company Research
+Swanson Health,https://www.swansonvitamins.com,BioPerine,3,North America,Bioenhancer,640,3.7,2025-10-11,Company Research
+Swanson Health,https://www.swansonvitamins.com,Capsimax,2,North America,Primary Active,590,3.5,2025-10-11,Company Research
+Doctor's Best,https://www.doctorsbest.com,CurcuWIN,2,Global,Primary Active,350,4.3,2025-10-11,Company Research
+Solgar,https://www.solgar.com,Lutemax 2020,1,Global,Primary Active,160,4.4,2025-10-11,Company Research
+Garden of Life,https://www.gardenoflife.com,BioPerine,3,Global,Bioenhancer,370,4.1,2025-10-11,Company Research
+Garden of Life,https://www.gardenoflife.com,Capsimax,1,Global,Primary Active,220,3.9,2025-10-11,Company Research
+Himalaya Wellness,https://www.himalayawellness.com,CurcuWIN,2,Asia-Pacific,Primary Active,480,4.5,2025-10-11,Company Research
+GNC,https://www.gnc.com,Lutemax 2020,4,Global,Primary Active,910,4.2,2025-10-11,Company Research

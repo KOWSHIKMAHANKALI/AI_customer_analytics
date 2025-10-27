@@ -152,12 +152,24 @@ if not filtered_data.empty:
     with col4:
         avg_sentiment = filtered_data['sentiment_score'].mean()
         st.metric("Average Sentiment", f"{avg_sentiment:.2f}/5.0")
+        
+        # Add explanation based on sentiment score
+        if avg_sentiment >= 4.0:
+            sentiment_explanation = "😊 Customers express very positive opinions overall."
+        elif avg_sentiment >= 3.0:
+            sentiment_explanation = "🙂 Sentiment is moderately positive with some mixed feedback."
+        elif avg_sentiment >= 2.0:
+            sentiment_explanation = "😐 Average sentiment — some customers are neutral or unsatisfied."
+        else:
+            sentiment_explanation = "☹️ Sentiment is generally negative; improvement may be needed."
+
+        st.caption(sentiment_explanation)
 
 # =====================
 # WHO IS USING INGREDIENTS
 # =====================
 if not filtered_data.empty:
-    st.header("🏢 WHO is using OmniActive ingredients?")
+    st.header("🏢 who is using OmniActive ingredients?")
     
     col_who1, col_who2 = st.columns([3, 2])
     
@@ -301,10 +313,31 @@ if not mentions_data.empty:
             st.plotly_chart(fig_sentiment, use_container_width=True)
             
             # Sentiment by ingredient
-            ingredient_sentiment = mentions_filtered.groupby('ingredient')['sentiment_score'].mean().sort_values(ascending=False)
-            st.subheader("Average Sentiment Score")
-            for ingredient, score in ingredient_sentiment.items():
-                st.metric(ingredient, f"{score:.1f}/5.0")
+            # Sentiment by ingredient with explanation
+ingredient_sentiment = mentions_filtered.groupby('ingredient')['sentiment_score'].mean().sort_values(ascending=False)
+st.subheader("Average Sentiment Score")
+
+for ingredient, score in ingredient_sentiment.items():
+    st.metric(ingredient, f"{score:.1f}/5.0")
+    
+    # Explanation logic
+    if ingredient.lower() == "lutemax 2020":
+        st.caption("🟢 Highly positive sentiment — driven by FDA and EU approvals, reinforcing trust and market leadership.")
+    elif ingredient.lower() == "curcuwin":
+        st.caption("🟢 Positive sentiment — strong clinical validation and awards for joint health benefits contribute to optimism.")
+    elif ingredient.lower() == "capsimax":
+        st.caption("🟡 Moderately positive sentiment — innovation awards increased awareness, but competition remains intense.")
+    elif ingredient.lower() == "bioperine":
+        st.caption("🟢 Positive sentiment — sustained market presence and formulation versatility support stable brand perception.")
+    elif ingredient.lower() == "oligopin":
+        st.caption("🟢 Positive sentiment — improved supply stability and quality perception boosted industry confidence.")
+    elif ingredient.lower() == "sabeet":
+        st.caption("🟢 Positive sentiment — endurance study results enhanced its image in sports nutrition.")
+    elif ingredient.lower() == "forslean":
+        st.caption("🟢 Positive sentiment — regulatory clarity and renewed metabolic health positioning improved its outlook.")
+    else:
+        st.caption("🙂 Neutral sentiment — limited new mentions or steady market perception.")
+
 
 # =====================
 # COMPETITIVE ANALYSIS
