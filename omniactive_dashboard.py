@@ -339,7 +339,7 @@ for ingredient, score in ingredient_sentiment.items():
         st.caption("🙂 Neutral sentiment — limited new mentions or steady market perception.")
 
 
-# =====================
+# =====================F
 # COMPETITIVE ANALYSIS
 # =====================
 if not filtered_data.empty and not market_data.empty:
@@ -486,7 +486,6 @@ with col_export2:
 
 with col_export3:
     if st.button("🔄 Update Data Source"):
-        st.info("To update data, run: `python data_collector.py`")
         st.code("python data_collector.py")
 
 # =====================
